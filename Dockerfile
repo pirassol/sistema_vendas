@@ -42,12 +42,12 @@ mkdir -p /app/static/uploads/fotos_eventos\n\
 mkdir -p /app/static/uploads/fotos_usuarios\n\
 chmod -R 777 /app/static/uploads\n\
 \n\
-# Executar como appuser\n\
-exec gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 app:app' > /app/entrypoint.sh \
-    && chmod +x /app/entrypoint.sh \
-    && chown appuser:appuser /app/entrypoint.sh
+# Mudar para o usuário appuser\n\
+exec gosu appuser gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 app:app' > /app/entrypoint.sh \
+    && chmod +x /app/entrypoint.sh
 
-USER appuser
+# Instalar gosu para executar comandos como outro usuário
+RUN apt-get update && apt-get install -y gosu && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 5000
 
