@@ -10,17 +10,26 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN useradd -m appuser
-
-COPY . .
+# Criar usuário não-root com UID 1000
+RUN groupadd -g 1000 appuser && \
+    useradd -u 1000 -g appuser -s /bin/bash -m appuser
 
 # Criar diretórios necessários e ajustar permissões
 RUN mkdir -p /app/static/uploads \
     && mkdir -p /app/instance \
+    && mkdir -p /app/templates \
     && chown -R appuser:appuser /app \
-    && chmod -R 755 /app \
-    && chmod -R 775 /app/static/uploads \
-    && chmod -R 775 /app/instance
+    && chmod -R 777 /app/static/uploads \
+    && chmod -R 777 /app/instance \
+    && chmod -R 777 /app/templates
+
+# Copiar arquivos da aplicação
+COPY --chown=appuser:appuser . .
+
+# Garantir que os diretórios tenham as permissões corretas após a cópia
+RUN chmod -R 777 /app/static/uploads \
+    && chmod -R 777 /app/instance \
+    && chmod -R 777 /app/templates
 
 USER appuser
 

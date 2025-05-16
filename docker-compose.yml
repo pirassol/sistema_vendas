@@ -8,9 +8,9 @@ services:
     container_name: sistema-vendas
     restart: unless-stopped
     volumes:
-      - ./instance:/app/instance:rw
-      - ./static:/app/static:rw
-      - ./templates:/app/templates:rw
+      - ./instance:/app/instance:rw,z
+      - ./static:/app/static:rw,z
+      - ./templates:/app/templates:rw,z
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=production
