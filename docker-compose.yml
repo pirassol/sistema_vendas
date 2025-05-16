@@ -27,6 +27,7 @@ services:
       - "traefik.http.services.sistema-vendas.loadbalancer.server.port=5000"
       - "traefik.http.middlewares.sistema-vendas-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.sistema-vendas.middlewares=sistema-vendas-https-redirect"
+    init: true
 
 networks:
   festeja:

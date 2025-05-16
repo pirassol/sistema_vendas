@@ -16,15 +16,21 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar arquivos da aplicação
-COPY . .
-
-# Criar diretórios necessários e ajustar permissões
+# Criar diretórios necessários e ajustar permissões iniciais
 RUN mkdir -p /app/static/uploads \
     && mkdir -p /app/instance \
     && mkdir -p /app/templates \
     && chown -R appuser:appuser /app \
     && chmod -R 755 /app \
+    && chmod -R 777 /app/static/uploads \
+    && chmod -R 777 /app/instance \
+    && chmod -R 777 /app/templates
+
+# Copiar arquivos da aplicação
+COPY --chown=appuser:appuser . .
+
+# Garantir que os diretórios mantenham as permissões corretas após a cópia
+RUN chmod -R 755 /app \
     && chmod -R 777 /app/static/uploads \
     && chmod -R 777 /app/instance \
     && chmod -R 777 /app/templates
