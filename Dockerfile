@@ -14,10 +14,13 @@ RUN useradd -m appuser
 
 COPY . .
 
+# Criar diretórios necessários e ajustar permissões
 RUN mkdir -p /app/static/uploads \
     && mkdir -p /app/instance \
+    && chown -R appuser:appuser /app \
     && chmod -R 755 /app \
-    && chown -R appuser:appuser /app
+    && chmod -R 775 /app/static/uploads \
+    && chmod -R 775 /app/instance
 
 USER appuser
 

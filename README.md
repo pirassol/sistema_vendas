@@ -1,56 +1,52 @@
-# Sistema de Vendas com Geração de Fichas
+# Sistema de Vendas
 
-Este é um sistema de vendas que permite cadastrar produtos e gerar fichas individuais para cada venda, que podem ser retiradas nas barracas.
-
-## Funcionalidades
-
-- Cadastro de produtos com nome, preço e quantidade
-- Registro de vendas
-- Geração automática de fichas em PDF para cada venda
-- Interface web amigável
-- Controle de estoque automático
+Sistema de gerenciamento de vendas desenvolvido em Python com Flask.
 
 ## Requisitos
 
-- Python 3.7 ou superior
-- pip (gerenciador de pacotes Python)
+- Python 3.9+
+- Docker (opcional)
 
 ## Instalação
 
-1. Clone este repositório ou baixe os arquivos
-2. Navegue até a pasta do projeto
+### Usando Docker
+
+```bash
+# Construir a imagem
+docker build -t sistema-vendas .
+
+# Executar o container
+docker run -p 5000:5000 sistema-vendas
+```
+
+### Instalação Local
+
+1. Clone o repositório
+2. Crie um ambiente virtual:
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+```
+
 3. Instale as dependências:
 ```bash
 pip install -r requirements.txt
 ```
 
-## Como Usar
-
-1. Inicie o servidor:
+4. Execute a aplicação:
 ```bash
-python app.py
+flask run
 ```
-
-2. Abra seu navegador e acesse:
-```
-http://localhost:5000
-```
-
-3. Use o sistema:
-   - Cadastre produtos na página inicial
-   - Realize vendas selecionando o produto e informando a barraca
-   - As fichas serão geradas automaticamente após cada venda
 
 ## Estrutura do Projeto
 
 - `app.py`: Arquivo principal da aplicação
-- `templates/`: Pasta com os templates HTML
-- `vendas.db`: Banco de dados SQLite (criado automaticamente)
-- `requirements.txt`: Lista de dependências do projeto
+- `static/`: Arquivos estáticos (CSS, JS, imagens)
+- `templates/`: Templates HTML
+- `instance/`: Arquivos de configuração local
+- `static/uploads/`: Diretório para upload de imagens
 
-## Tecnologias Utilizadas
+## Licença
 
-- Flask: Framework web
-- SQLAlchemy: ORM para banco de dados
-- ReportLab: Geração de PDFs
-- Bootstrap: Framework CSS para interface 
+Este projeto está sob a licença MIT. 
