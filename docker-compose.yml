@@ -26,6 +26,9 @@ services:
       - "traefik.http.services.sistema-vendas.loadbalancer.server.port=5000"
       - "traefik.http.middlewares.sistema-vendas-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.sistema-vendas.middlewares=sistema-vendas-https-redirect"
+      - "traefik.http.routers.sistema-vendas.service=sistema-vendas"
+      - "traefik.http.services.sistema-vendas.loadbalancer.passHostHeader=true"
+      - "traefik.http.routers.sistema-vendas.priority=100"
     init: true
     privileged: true
 
