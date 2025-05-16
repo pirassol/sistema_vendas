@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Usuários da Empresa</h2>
+        {% if current_user.perfil == 'admin' %}
+        <a href="{{ url_for('novo_usuario_empresa') }}" class="btn btn-novo-item">
+            <i class="fas fa-plus me-1"></i>
+            Novo Usuário
+        </a>
+        {% endif %}
+    </div>
+
+    {% if usuarios %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Perfil</th>
+                    <th>Status</th>
+                    <th>Data de Criação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario.nome }}</td>
+                    <td>{{ usuario.email }}</td>
+                    <td>
+                        <span class="badge {% if usuario.perfil == 'admin' %}bg-danger{% elif usuario.perfil == 'gerente' %}bg-warning{% else %}bg-info{% endif %}">
+                            {{ usuario.perfil }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge {% if usuario.ativo %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ 'Ativo' if usuario.ativo else 'Inativo' }}
+                        </span>
+                    </td>
+                    <td>{{ usuario.data_criacao.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{{ url_for('editar_usuario', usuario_id=usuario.id) }}" class="btn btn-sm btn-primary" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% if usuario.id != current_user.id %}
+                            <button type="button" 
+                                    class="btn btn-sm {% if usuario.ativo %}btn-warning{% else %}btn-success{% endif %}"
+                                    onclick="toggleUsuarioStatus({{ usuario.id }}, {{ usuario.ativo|tojson }})"
+                                    title="{{ 'Desativar' if usuario.ativo else 'Ativar' }}">
+                                <i class="fas {% if usuario.ativo %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Nenhum usuário encontrado.
+    </div>
+    {% endif %}
+</div>
+
+{% if current_user.perfil == 'admin' %}
+<script>
+function toggleUsuarioStatus(usuarioId, statusAtual) {
+    if (confirm('Tem certeza que deseja ' + (statusAtual ? 'desativar' : 'ativar') + ' este usuário?')) {
+        fetch(`/usuario/${usuarioId}/toggle_status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Erro ao alterar status do usuário: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao alterar status do usuário');
+        });
+    }
+}
+</script>
+{% endif %}
+{% endblock %} 

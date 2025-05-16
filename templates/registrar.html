@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Registrar Nova Empresa</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.nome_empresa.label(class="form-label") }}
+                                {{ form.nome_empresa(class="form-control") }}
+                                {% for error in form.nome_empresa.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.cnpj.label(class="form-label") }}
+                                {{ form.cnpj(class="form-control") }}
+                                {% for error in form.cnpj.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.email.label(class="form-label") }}
+                                {{ form.email(class="form-control") }}
+                                {% for error in form.email.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.senha.label(class="form-label") }}
+                                <div class="input-group">
+                                    {{ form.senha(class="form-control", id="senha") }}
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleSenha">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                {% for error in form.senha.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.confirmar_senha.label(class="form-label") }}
+                                <div class="input-group">
+                                    {{ form.confirmar_senha(class="form-control", id="confirmar_senha") }}
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmarSenha">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                                {% for error in form.confirmar_senha.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.cep.label(class="form-label") }}
+                                <div class="input-group">
+                                    {{ form.cep(class="form-control") }}
+                                    <button type="button" class="btn btn-outline-secondary" id="buscar_cep">Buscar CEP</button>
+                                </div>
+                                {% for error in form.cep.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                {{ form.endereco.label(class="form-label") }}
+                                {{ form.endereco(class="form-control") }}
+                                {% for error in form.endereco.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.numero.label(class="form-label") }}
+                                {{ form.numero(class="form-control") }}
+                                {% for error in form.numero.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                {{ form.complemento.label(class="form-label") }}
+                                {{ form.complemento(class="form-control") }}
+                                {% for error in form.complemento.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                {{ form.bairro.label(class="form-label") }}
+                                {{ form.bairro(class="form-control") }}
+                                {% for error in form.bairro.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.cidade.label(class="form-label") }}
+                                {{ form.cidade(class="form-control") }}
+                                {% for error in form.cidade.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.estado.label(class="form-label") }}
+                                {{ form.estado(class="form-control") }}
+                                {% for error in form.estado.errors %}
+                                    <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                            <a href="{{ url_for('login') }}" class="btn btn-secondary">Voltar para Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Máscara para CNPJ
+document.getElementById('cnpj').addEventListener('input', function (e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 14) {
+        value = value.replace(/^(\d{2})(\d)/, "$1.$2");
+        value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+        value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
+        value = value.replace(/(\d{4})(\d)/, "$1-$2");
+        e.target.value = value;
+    }
+});
+
+// Máscara para CEP
+document.getElementById('cep').addEventListener('input', function (e) {
+    let value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 8) {
+        value = value.replace(/^(\d{5})(\d)/, "$1-$2");
+        e.target.value = value;
+    }
+});
+
+// Busca de CEP
+document.getElementById('buscar_cep').addEventListener('click', function() {
+    const cep = document.getElementById('cep').value.replace(/\D/g, '');
+    if (cep.length !== 8) {
+        alert('CEP inválido');
+        return;
+    }
+
+    fetch(`/buscar_cep/${cep}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.erro) {
+                alert('CEP não encontrado');
+                return;
+            }
+            document.getElementById('endereco').value = data.endereco;
+            document.getElementById('bairro').value = data.bairro;
+            document.getElementById('cidade').value = data.cidade;
+            document.getElementById('estado').value = data.estado;
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao buscar CEP');
+        });
+});
+
+// Toggle de visibilidade da senha
+document.getElementById('toggleSenha').addEventListener('click', function() {
+    const senhaInput = document.getElementById('senha');
+    const icon = this.querySelector('i');
+    
+    if (senhaInput.type === 'password') {
+        senhaInput.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        senhaInput.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
+});
+
+// Toggle de visibilidade da confirmação de senha
+document.getElementById('toggleConfirmarSenha').addEventListener('click', function() {
+    const confirmarSenhaInput = document.getElementById('confirmar_senha');
+    const icon = this.querySelector('i');
+    
+    if (confirmarSenhaInput.type === 'password') {
+        confirmarSenhaInput.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        confirmarSenhaInput.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
+});
+</script>
+{% endblock %} 

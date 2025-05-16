@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Produtos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-box me-2"></i>
+            Produtos
+        </h2>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>
+                Lista de Produtos
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if produtos %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-tag me-1"></i> Nome</th>
+                                <th><i class="fas fa-dollar-sign me-1"></i> Preço</th>
+                                <th><i class="fas fa-boxes me-1"></i> Estoque</th>
+                                <th><i class="fas fa-store me-1"></i> Barraca</th>
+                                <th><i class="fas fa-calendar me-1"></i> Evento</th>
+                                <th><i class="fas fa-cogs me-1"></i> Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for produto in produtos %}
+                                <tr>
+                                    <td>{{ produto.nome }}</td>
+                                    <td>R$ {{ "%.2f"|format(produto.preco) }}</td>
+                                    <td>{{ produto.quantidade_estoque }}</td>
+                                    <td>
+                                        <a href="{{ url_for('visualizar_barraca', barraca_id=produto.barraca.id) }}">
+                                            {{ produto.barraca.nome }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('visualizar_evento', evento_id=produto.evento.id) }}">
+                                            {{ produto.evento.nome }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{ url_for('visualizar_produto', produto_id=produto.id) }}" class="btn btn-sm btn-info" title="Visualizar">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ url_for('editar_produto', produto_id=produto.id) }}" class="btn btn-sm btn-primary" title="Editar">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-danger" title="Excluir" data-bs-toggle="modal" data-bs-target="#excluirProdutoModal{{ produto.id }}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Nenhum produto cadastrado.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% for produto in produtos %}
+<!-- Modal de Exclusão -->
+<div class="modal fade" id="excluirProdutoModal{{ produto.id }}" tabindex="-1" aria-labelledby="excluirProdutoModalLabel{{ produto.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="excluirProdutoModalLabel{{ produto.id }}">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Confirmar Exclusão
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                Tem certeza que deseja excluir o produto "{{ produto.nome }}"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="{{ url_for('excluir_produto', produto_id=produto.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %} 

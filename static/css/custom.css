@@ -1,0 +1,103 @@
+:root {
+    --menu-color: var(--cor-menu, #0d6efd);
+    --footer-color: var(--cor-rodape, #212529);
+    --primary-color: var(--cor-primaria, #0d6efd);
+    --secondary-color: var(--cor-secundaria, #6c757d);
+}
+
+/* Botões */
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+}
+
+/* Cabeçalhos */
+.card-header {
+    background-color: var(--menu-color) !important;
+    color: #fff;
+}
+
+.table thead th {
+    background-color: var(--menu-color) !important;
+    color: #fff;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--menu-color) !important;
+}
+
+.navbar-brand,
+.navbar .nav-link {
+    color: #fff !important;
+}
+
+/* Footer */
+footer {
+    background-color: var(--footer-color) !important;
+    color: #fff;
+}
+
+/* Alertas */
+.alert-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #fff;
+}
+
+/* Badges */
+.badge-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.badge-secondary {
+    background-color: var(--secondary-color) !important;
+}
+
+/* Links */
+a {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
+
+/* Paginação */
+.page-item.active .page-link {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Progress bars */
+.progress-bar {
+    background-color: var(--primary-color) !important;
+}
+
+/* Form elements */
+.form-control:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-color), 0.25) !important;
+}
+
+.custom-select:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-color), 0.25) !important;
+}
+
+/* Tabs */
+.nav-tabs .nav-link.active {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* List groups */
+.list-group-item.active {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+} 

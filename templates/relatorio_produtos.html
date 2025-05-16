@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Relatório de Produtos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Relatório de Produtos</h1>
+            {% if evento_ativo %}
+            <div class="alert alert-info">
+                <i class="fas fa-calendar-alt me-2"></i>
+                Evento: <strong>{{ evento_ativo.nome }}</strong>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Filtros</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-6">
+                            <label for="barraca" class="form-label">Barraca</label>
+                            <select class="form-select" id="barraca" name="barraca_id">
+                                <option value="">Todas as barracas</option>
+                                {% for barraca in barracas %}
+                                <option value="{{ barraca.id }}" {% if barraca.id|string == barraca_selecionada %}selected{% endif %}>
+                                    {{ barraca.nome }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter me-2"></i>Filtrar
+                            </button>
+                            <a href="{{ url_for('relatorio_produtos') }}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Limpar Filtros
+                            </a>
+                            <a href="{{ url_for('relatorio_produtos_pdf', barraca_id=barraca_selecionada) }}" 
+                               class="btn btn-success">
+                                <i class="fas fa-download me-2"></i>Download PDF
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                        <table class="table table-striped">
+                            <thead class="sticky-top bg-white">
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Barraca</th>
+                                    <th>Preço Unitário</th>
+                                    <th>Estoque</th>
+                                    <th>Vendidos</th>
+                                    <th>Estornados</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in produtos %}
+                                <tr>
+                                    <td>{{ item.produto.nome }}</td>
+                                    <td>{{ item.produto.barraca.nome }}</td>
+                                    <td>R$ {{ "%.2f"|format(item.produto.preco) }}</td>
+                                    <td>{{ item.produto.quantidade }}</td>
+                                    <td>{{ item.quantidade_vendida }}</td>
+                                    <td>{{ item.quantidade_estornada }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-dark">
+                                    <td colspan="3" class="text-end"><strong>Totais:</strong></td>
+                                    <td><strong>{{ produtos|sum(attribute='produto.quantidade') }}</strong></td>
+                                    <td><strong>{{ produtos|sum(attribute='quantidade_vendida') }}</strong></td>
+                                    <td><strong>{{ produtos|sum(attribute='quantidade_estornada') }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.sticky-top {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+</style>
+{% endblock %} 

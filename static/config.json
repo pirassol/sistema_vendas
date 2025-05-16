@@ -1,0 +1,17 @@
+{
+    "nome_sistema": "Festeja",
+    "cor_primaria": "#ff3333",
+    "cor_primaria_hover": "#e02424",
+    "cor_secundaria": "#6a737b",
+    "cor_sucesso": "#198754",
+    "cor_perigo": "#dc3545",
+    "cor_alerta": "#ffc107",
+    "cor_info": "#ff8585",
+    "cor_clara": "#f8f9fa",
+    "cor_escura": "#212529",
+    "descricao_sistema": "Sistema de Gest\u00e3o de Eventos",
+    "exibir_rodape": true,
+    "texto_rodape": "Matriz Senhor Bom Jesus",
+    "cor_menu": "#000000",
+    "cor_rodape": "#000000"
+}

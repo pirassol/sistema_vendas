@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Solicitações Pendentes</h2>
+    
+    {% if empresas %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>CNPJ</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>Data de Registro</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for empresa in empresas %}
+                <tr>
+                    <td>{{ empresa.cnpj }}</td>
+                    <td>{{ empresa.nome }}</td>
+                    <td>{{ empresa.email }}</td>
+                    <td>{{ empresa.telefone }}</td>
+                    <td>{{ empresa.data_registro.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>
+                        <a href="{{ url_for('aprovar_empresa', empresa_id=empresa.id) }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-check"></i> Aprovar
+                        </a>
+                        <a href="{{ url_for('rejeitar_empresa', empresa_id=empresa.id) }}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-times"></i> Rejeitar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        Não há solicitações pendentes no momento.
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

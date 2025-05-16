@@ -1,0 +1,378 @@
+{% extends "base.html" %}
+
+{% block title %}Relatório de Vendas{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Relatório de Vendas</h1>
+        </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark py-2">
+                    <h6 class="mb-0 text-white">
+                        <i class="fas fa-filter me-2"></i>Filtros
+                    </h6>
+                </div>
+                <div class="card-body py-2">
+                    <form method="GET" action="{{ url_for('relatorio_vendas') }}" class="row g-2">
+                        <div class="col-md-2">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="fas fa-hashtag"></i></span>
+                                <input type="number" class="form-control form-control-sm" id="id_venda" name="id_venda" placeholder="ID Venda" value="{{ request.args.get('id_venda', '') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="fas fa-calendar"></i></span>
+                                <input type="date" class="form-control form-control-sm" id="data_inicio" name="data_inicio" value="{{ request.args.get('data_inicio', '') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="fas fa-calendar"></i></span>
+                                <input type="date" class="form-control form-control-sm" id="data_fim" name="data_fim" value="{{ request.args.get('data_fim', '') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="fas fa-store"></i></span>
+                                <select class="form-select form-select-sm" id="barraca" name="barraca">
+                                    <option value="">Todas Barracas</option>
+                                    {% for barraca in barracas %}
+                                    <option value="{{ barraca.id }}" {% if request.args.get('barraca')|int == barraca.id %}selected{% endif %}>{{ barraca.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="fas fa-credit-card"></i></span>
+                                <select class="form-select form-select-sm" id="forma_pagamento" name="forma_pagamento">
+                                    <option value="">Todas Formas</option>
+                                    <option value="dinheiro" {% if request.args.get('forma_pagamento') == 'dinheiro' %}selected{% endif %}>Dinheiro</option>
+                                    <option value="cartao" {% if request.args.get('forma_pagamento') == 'cartao' %}selected{% endif %}>Cartão</option>
+                                    <option value="pix" {% if request.args.get('forma_pagamento') == 'pix' %}selected{% endif %}>PIX</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                                <select class="form-select form-select-sm" id="vendedor" name="vendedor">
+                                    <option value="">Todos Vendedores</option>
+                                    {% for usuario in usuarios %}
+                                    <option value="{{ usuario.id }}" {% if request.args.get('vendedor')|int == usuario.id %}selected{% endif %}>{{ usuario.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light"><i class="fas fa-tag"></i></span>
+                                <select class="form-select form-select-sm" id="status" name="status">
+                                    <option value="">Todos Status</option>
+                                    <option value="ativa" {% if request.args.get('status') == 'ativa' %}selected{% endif %}>Ativas</option>
+                                    <option value="cancelada" {% if request.args.get('status') == 'cancelada' %}selected{% endif %}>Canceladas</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <hr class="my-3">
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter me-2"></i>Filtrar
+                                </button>
+                                <a href="{{ url_for('relatorio_vendas') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-2"></i>Limpar Filtros
+                                </a>
+                                <a href="{{ url_for('relatorio_vendas_pdf') }}" class="btn btn-success">
+                                    <i class="fas fa-download me-2"></i>Download PDF
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Data</th>
+                                    <th>Barraca</th>
+                                    <th>Forma de Pagamento</th>
+                                    <th>Vendedor</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for venda in vendas %}
+                                <tr>
+                                    <td>{{ venda.id }}</td>
+                                    <td>{{ venda.data_venda.strftime('%d/%m/%Y %H:%M') }}</td>
+                                    <td>{{ venda.barraca }}</td>
+                                    <td>{{ venda.forma_pagamento|capitalize }}</td>
+                                    <td>{{ venda.usuario }}</td>
+                                    <td>R$ {{ "%.2f"|format(venda.total_venda)|replace('.', ',') }}</td>
+                                    <td>
+                                        {% if venda.cancelada %}
+                                            <span class="badge bg-danger">Cancelada</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Ativa</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-link text-primary p-0" data-bs-toggle="modal" data-bs-target="#modalItens{{ venda.id }}" title="Ver Itens">
+                                            <i class="fas fa-list"></i>
+                                        </button>
+                                        {% if not venda.cancelada %}
+                                        <button type="button" class="btn btn-link text-danger p-0 btn-cancelar-venda" data-venda-id="{{ venda.id }}" title="Cancelar Venda">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr class="table-dark">
+                                    <td colspan="5" class="text-end"><strong>Total Geral (Vendas Ativas):</strong></td>
+                                    <td><strong>R$ {{ "{:,.2f}".format(vendas|selectattr('cancelada', 'equalto', false)|sum(attribute='total_venda')).replace(',', '|').replace('.', ',').replace('|', '.') }}</strong></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr class="table-danger">
+                                    <td colspan="5" class="text-end"><strong>Total Geral (Vendas Canceladas):</strong></td>
+                                    <td><strong>R$ {{ "{:,.2f}".format(vendas|selectattr('cancelada', 'equalto', true)|sum(attribute='total_venda')).replace(',', '|').replace('.', ',').replace('|', '.') }}</strong></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modais para cada venda -->
+{% for venda in vendas %}
+<div class="modal fade" id="modalItens{{ venda.id }}" tabindex="-1" aria-labelledby="modalItensLabel{{ venda.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalItensLabel{{ venda.id }}">
+                    Itens da Venda #{{ venda.id }} - {{ venda.data_venda.strftime('%d/%m/%Y %H:%M') }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Valor Unitário</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in venda.itens %}
+                            <tr>
+                                <td>{{ item.produto }}</td>
+                                <td>R$ {{ "%.2f"|format(item.preco_unitario)|replace('.', ',') }}</td>
+                                <td>R$ {{ "%.2f"|format(item.total)|replace('.', ',') }}</td>
+                                <td>
+                                    {% if item.status == 'cancelado' %}
+                                        <span class="badge bg-danger">Cancelado</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Ativo</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.status != 'cancelado' %}
+                                    <button type="button" class="btn btn-danger btn-sm cancelar-item" 
+                                            data-venda-id="{{ venda.id }}"
+                                            data-item-id="{{ item.id }}"
+                                            data-produto="{{ item.produto }}"
+                                            data-preco="{{ item.preco_unitario }}">
+                                        <i class="fas fa-times"></i> Cancelar
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-dark">
+                                <td colspan="3" class="text-end"><strong>Total da Venda:</strong></td>
+                                <td><strong>R$ {{ "%.2f"|format(venda.total_venda)|replace('.', ',') }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modal de Confirmação de Cancelamento -->
+<div class="modal fade" id="modalConfirmacaoCancelamento" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Cancelamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja cancelar este item?</p>
+                <p><strong>Produto:</strong> <span id="produto-cancelar"></span></p>
+                <p><strong>Valor:</strong> R$ <span id="valor-cancelar"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                <button type="button" class="btn btn-danger" id="confirmar-cancelamento">Sim, Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmação de Cancelamento de Venda -->
+<div class="modal fade" id="modalConfirmacaoCancelamentoVenda" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Cancelamento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja cancelar esta venda?</p>
+                <p><strong>ID da Venda:</strong> <span id="venda-id-cancelar"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Não</button>
+                <button type="button" class="btn btn-danger" id="confirmar-cancelamento-venda">Sim, Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modalConfirmacao = new bootstrap.Modal(document.getElementById('modalConfirmacaoCancelamento'));
+    const modalConfirmacaoVenda = new bootstrap.Modal(document.getElementById('modalConfirmacaoCancelamentoVenda'));
+    let itemParaCancelar = null;
+    let vendaParaCancelar = null;
+
+    // Adicionar evento de clique aos botões de cancelar item
+    document.querySelectorAll('.cancelar-item').forEach(button => {
+        button.addEventListener('click', function() {
+            itemParaCancelar = {
+                vendaId: this.dataset.vendaId,
+                itemId: this.dataset.itemId,
+                produto: this.dataset.produto,
+                preco: this.dataset.preco
+            };
+
+            // Preencher o modal de confirmação
+            document.getElementById('produto-cancelar').textContent = itemParaCancelar.produto;
+            document.getElementById('valor-cancelar').textContent = parseFloat(itemParaCancelar.preco).toFixed(2).replace('.', ',');
+
+            // Mostrar o modal de confirmação
+            modalConfirmacao.show();
+        });
+    });
+
+    // Adicionar evento de clique aos botões de cancelar venda
+    document.querySelectorAll('.btn-cancelar-venda').forEach(button => {
+        button.addEventListener('click', function() {
+            vendaParaCancelar = {
+                vendaId: this.dataset.vendaId
+            };
+
+            // Preencher o modal de confirmação
+            document.getElementById('venda-id-cancelar').textContent = vendaParaCancelar.vendaId;
+
+            // Mostrar o modal de confirmação
+            modalConfirmacaoVenda.show();
+        });
+    });
+
+    // Confirmar cancelamento de item
+    document.getElementById('confirmar-cancelamento').addEventListener('click', function() {
+        if (itemParaCancelar) {
+            fetch(`/cancelar-item-venda/${itemParaCancelar.vendaId}/${itemParaCancelar.itemId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Fechar os modais
+                    modalConfirmacao.hide();
+                    document.querySelector(`#modalItens${itemParaCancelar.vendaId}`).querySelector('.btn-close').click();
+                    
+                    // Recarregar a página para atualizar os dados
+                    window.location.reload();
+                } else {
+                    alert('Erro ao cancelar item: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao cancelar item');
+            });
+        }
+    });
+
+    // Confirmar cancelamento de venda
+    document.getElementById('confirmar-cancelamento-venda').addEventListener('click', function() {
+        const vendaId = document.getElementById('venda-id-cancelar').textContent;
+        
+        fetch(`/cancelar-venda/${vendaId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                modalConfirmacaoVenda.hide();
+                window.location.reload();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao cancelar venda');
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% endblock %} 

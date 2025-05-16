@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha do Evento</title>
+    <style>
+        @media print {
+            .ficha {
+                page-break-after: always;
+                page-break-inside: avoid;
+                width: 70mm !important;
+                height: 50mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+            }
+            body {
+                padding: 0;
+                margin: 0;
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+            }
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .ficha {
+            width: 70mm;
+            height: 50mm;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-transform: uppercase;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            margin: 0;
+            padding: 2px 4px;
+            background-color: black;
+            color: white;
+            border: 2px solid black;
+            border-radius: 5px;
+        }
+        .header div {
+            font-weight: bold;
+        }
+        .qr-code {
+            display: flex;
+            justify-content: center;
+            margin: 0;
+        }
+        .qr-code img {
+            width: 70px;
+            height: 70px;
+        }
+        .produto {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .info {
+            font-size: 10px;
+            text-align: center;
+            margin: 0;
+        }
+        .info div {
+            margin: 0;
+        }
+    </style>
+    <script>
+        let printed = false;
+        
+        // Bloqueia o botão direito do mouse
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Bloqueia atalhos de teclado
+        document.addEventListener('keydown', function(e) {
+            // Bloqueia Ctrl+P, Ctrl+Shift+P, etc
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+                e.preventDefault();
+                if (!printed) {
+                    window.print();
+                }
+            }
+        });
+
+        window.onload = function() {
+            // Força a impressão de apenas uma cópia
+            const printSettings = {
+                copies: 1,
+                collate: false,
+                printBackground: true
+            };
+            
+            // Tenta definir as configurações de impressão
+            try {
+                window.print(printSettings);
+            } catch (e) {
+                // Se não conseguir definir as configurações, imprime normalmente
+                window.print();
+            }
+        }
+
+        window.onafterprint = function() {
+            if (!printed) {
+                printed = true;
+                // Redireciona para a página inicial após a impressão
+                setTimeout(function() {
+                    window.location.href = '/';
+                }, 1000);
+            }
+        }
+
+        // Bloqueia o botão de imprimir novamente
+        window.onbeforeprint = function() {
+            if (printed) {
+                return false;
+            }
+        }
+    </script>
+</head>
+<body>
+    {% for ficha in fichas %}
+        {% for _ in range(ficha.item_venda.quantidade) %}
+        <div class="ficha">
+            <div class="header">
+                <div>Nº {{ venda.id }}</div>
+                <div>{{ venda.evento.nome }} ({{ venda.data_venda.strftime('%d/%m/%Y') }})</div>
+            </div>
+            <div class="qr-code">
+                <img src="data:image/png;base64,{{ ficha.qr_code_base64 }}" alt="QR Code">
+            </div>
+            <div class="produto">{{ ficha.item_venda.produto.nome }}</div>
+            <div class="info">
+                <div>Data/Hora: {{ venda.data_venda.strftime('%d/%m/%Y – %H:%M:%S') }}</div>
+                <div>Pagamento: {{ forma_pagamento }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    {% endfor %}
+</body>
+</html> 

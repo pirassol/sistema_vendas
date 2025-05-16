@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Evento{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2><i class="fas fa-calendar-plus me-2"></i>Novo Evento</h2>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('novo_evento') }}">
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome do Evento</label>
+                    <input type="text" class="form-control" id="nome" name="nome" required>
+                </div>
+                <div class="mb-3">
+                    <label for="data" class="form-label">Data</label>
+                    <input type="date" class="form-control" id="data" name="data" value="{{ data_atual }}" required>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="hora_inicio" class="form-label">Hora de Início</label>
+                            <input type="time" class="form-control" id="hora_inicio" name="hora_inicio" value="{{ hora_atual }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="hora_fim" class="form-label">Hora de Término</label>
+                            <input type="time" class="form-control" id="hora_fim" name="hora_fim" value="{{ hora_atual }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('listar_eventos') }}" class="btn" style="background-color: #add4d3; color: white;">
+                        <i class="fas fa-arrow-left me-1"></i>Voltar
+                    </a>
+                    <button type="submit" class="btn" style="background-color: #fb8351; color: white;">
+                        <i class="fas fa-save me-1"></i>Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

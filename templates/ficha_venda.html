@@ -1,0 +1,33 @@
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h5>Informações da Venda</h5>
+                    <p><strong>Data:</strong> {{ venda.data_venda.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <p><strong>Evento:</strong> {{ evento.nome }}</p>
+                    <p><strong>Barraca:</strong> {{ barraca.nome }}</p>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h5>Informações de Pagamento</h5>
+                    <p><strong>Forma de Pagamento:</strong> 
+                        {% if venda.forma_pagamento == 'credito' %}
+                            <i class="fas fa-credit-card"></i> Crédito
+                        {% elif venda.forma_pagamento == 'debito' %}
+                            <i class="fas fa-credit-card"></i> Débito
+                        {% elif venda.forma_pagamento == 'pix' %}
+                            <i class="fas fa-qrcode"></i> Pix
+                        {% else %}
+                            <i class="fas fa-money-bill"></i> Dinheiro
+                        {% endif %}
+                    </p>
+                    {% if venda.forma_pagamento == 'dinheiro' %}
+                        <p><strong>Valor Recebido:</strong> R$ {{ "%.2f"|format(venda.valor_recebido)|replace('.', ',') }}</p>
+                        <p><strong>Troco:</strong> R$ {{ "%.2f"|format(venda.troco)|replace('.', ',') }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-12">
+                    <h5>Produtos</h5> 
