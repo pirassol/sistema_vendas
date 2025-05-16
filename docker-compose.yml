@@ -1,15 +1,31 @@
 version: '3.8'
 
 services:
-  web:
-    build: .
-    ports:
-      - "5000:5000"
+  sistema-vendas:
+    build:
+      context: https://github.com/pirassol/sistema_vendas.git
+      dockerfile: Dockerfile
+    container_name: sistema-vendas
+    restart: unless-stopped
     volumes:
-      - .:/app
       - ./instance:/app/instance
+      - ./static:/app/static
+      - ./templates:/app/templates
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=production
       - FLASK_DEBUG=0
-    restart: always 
+    networks:
+      - festeja
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sistema-vendas.rule=Host(`festeja.ciadaweb.com.br`)"
+      - "traefik.http.routers.sistema-vendas.entrypoints=websecure"
+      - "traefik.http.routers.sistema-vendas.tls=true"
+      - "traefik.http.services.sistema-vendas.loadbalancer.server.port=5000"
+      - "traefik.http.middlewares.sistema-vendas-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.sistema-vendas.middlewares=sistema-vendas-https-redirect"
+
+networks:
+  festeja:
+    external: true 
