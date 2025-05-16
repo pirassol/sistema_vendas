@@ -16,6 +16,7 @@ COPY . .
 
 RUN mkdir -p /app/static/uploads \
     && mkdir -p /app/instance \
+    && chmod -R 755 /app \
     && chown -R appuser:appuser /app
 
 USER appuser
