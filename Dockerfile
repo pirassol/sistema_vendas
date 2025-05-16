@@ -16,24 +16,26 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Criar diretórios necessários e ajustar permissões iniciais
+# Criar diretórios necessários
 RUN mkdir -p /app/static/uploads \
     && mkdir -p /app/instance \
-    && mkdir -p /app/templates \
-    && chown -R appuser:appuser /app \
-    && chmod -R 755 /app \
-    && chmod -R 777 /app/static/uploads \
-    && chmod -R 777 /app/instance \
-    && chmod -R 777 /app/templates
+    && mkdir -p /app/templates
 
 # Copiar arquivos da aplicação
 COPY --chown=appuser:appuser . .
 
-# Garantir que os diretórios mantenham as permissões corretas após a cópia
-RUN chmod -R 755 /app \
-    && chmod -R 777 /app/static/uploads \
-    && chmod -R 777 /app/instance \
-    && chmod -R 777 /app/templates
+# Criar script de inicialização
+RUN echo '#!/bin/bash\n\
+mkdir -p /app/static/uploads\n\
+mkdir -p /app/instance\n\
+mkdir -p /app/templates\n\
+chown -R appuser:appuser /app\n\
+chmod -R 755 /app\n\
+chmod -R 777 /app/static/uploads\n\
+chmod -R 777 /app/instance\n\
+chmod -R 777 /app/templates\n\
+exec gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 app:app' > /app/entrypoint.sh \
+    && chmod +x /app/entrypoint.sh
 
 USER appuser
 
@@ -44,4 +46,4 @@ ENV FLASK_ENV=production
 ENV FLASK_DEBUG=0
 ENV PYTHONUNBUFFERED=1
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "120", "app:app"] 
+CMD ["/app/entrypoint.sh"] 

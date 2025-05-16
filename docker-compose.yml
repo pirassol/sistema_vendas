@@ -28,6 +28,7 @@ services:
       - "traefik.http.middlewares.sistema-vendas-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.sistema-vendas.middlewares=sistema-vendas-https-redirect"
     init: true
+    privileged: true
 
 networks:
   festeja:
