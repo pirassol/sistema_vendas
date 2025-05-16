@@ -31,12 +31,14 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib import colors
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sistema_vendas.db'
+
+# Configuração do banco de dados PostgreSQL
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql://sistema:senha_segura@db:5432/sistema')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'sua_chave_secreta_muito_forte_aqui'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'sua_chave_secreta_muito_forte_aqui')
 
 # Configuração do upload de arquivos
-UPLOAD_FOLDER = os.path.join(app.static_folder, 'uploads', 'fotos_produtos')
+UPLOAD_FOLDER = os.path.join(app.static_folder, 'uploads')
 FOTOS_PRODUTOS_FOLDER = os.path.join(UPLOAD_FOLDER, 'fotos_produtos')
 FOTOS_EVENTOS_FOLDER = os.path.join(UPLOAD_FOLDER, 'fotos_eventos')
 FOTOS_USUARIOS_FOLDER = os.path.join(UPLOAD_FOLDER, 'fotos_usuarios')
@@ -49,9 +51,13 @@ app.config['FOTOS_USUARIOS_FOLDER'] = FOTOS_USUARIOS_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max-limit
 
 # Criar diretórios se não existirem
-os.makedirs(FOTOS_PRODUTOS_FOLDER, exist_ok=True)
-os.makedirs(FOTOS_EVENTOS_FOLDER, exist_ok=True)
-os.makedirs(FOTOS_USUARIOS_FOLDER, exist_ok=True)
+try:
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    os.makedirs(FOTOS_PRODUTOS_FOLDER, exist_ok=True)
+    os.makedirs(FOTOS_EVENTOS_FOLDER, exist_ok=True)
+    os.makedirs(FOTOS_USUARIOS_FOLDER, exist_ok=True)
+except Exception as e:
+    app.logger.error(f'Erro ao criar diretórios: {str(e)}')
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
