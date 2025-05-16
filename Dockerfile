@@ -16,28 +16,37 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Criar diretórios necessários e configurar permissões
+RUN mkdir -p /app/static/uploads/fotos_produtos \
+    && mkdir -p /app/static/uploads/fotos_eventos \
+    && mkdir -p /app/static/uploads/fotos_usuarios \
+    && mkdir -p /app/instance \
+    && mkdir -p /app/templates \
+    && chown -R appuser:appuser /app \
+    && chmod -R 755 /app \
+    && chmod -R 777 /app/static/uploads \
+    && chmod -R 777 /app/instance \
+    && chmod -R 777 /app/templates
+
+# Copiar arquivos da aplicação
+COPY --chown=appuser:appuser . .
+
 # Criar script de inicialização
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
-# Criar diretórios necessários\n\
-mkdir -p /app/static/uploads\n\
-mkdir -p /app/instance\n\
-mkdir -p /app/templates\n\
-\n\
-# Ajustar permissões\n\
-chown -R appuser:appuser /app\n\
-chmod -R 755 /app\n\
+# Garantir que os diretórios existam e tenham as permissões corretas\n\
+mkdir -p /app/static/uploads/fotos_produtos\n\
+mkdir -p /app/static/uploads/fotos_eventos\n\
+mkdir -p /app/static/uploads/fotos_usuarios\n\
 chmod -R 777 /app/static/uploads\n\
-chmod -R 777 /app/instance\n\
-chmod -R 777 /app/templates\n\
 \n\
 # Executar como appuser\n\
 exec gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 120 app:app' > /app/entrypoint.sh \
-    && chmod +x /app/entrypoint.sh
+    && chmod +x /app/entrypoint.sh \
+    && chown appuser:appuser /app/entrypoint.sh
 
-# Copiar arquivos da aplicação
-COPY --chown=appuser:appuser . .
+USER appuser
 
 EXPOSE 5000
 
@@ -46,5 +55,4 @@ ENV FLASK_ENV=production
 ENV FLASK_DEBUG=0
 ENV PYTHONUNBUFFERED=1
 
-# Executar como root para garantir que o script de inicialização tenha permissões
 CMD ["/app/entrypoint.sh"] 
