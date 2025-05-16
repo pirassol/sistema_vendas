@@ -10,13 +10,14 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN useradd -m appuser
+
 COPY . .
 
 RUN mkdir -p /app/static/uploads \
     && mkdir -p /app/instance \
     && chown -R appuser:appuser /app
 
-RUN useradd -m appuser
 USER appuser
 
 EXPOSE 5000
