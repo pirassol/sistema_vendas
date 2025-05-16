@@ -17,7 +17,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Criar diretórios necessários e configurar permissões
-RUN mkdir -p /app/static/uploads/fotos_produtos \
+RUN mkdir -p /app/static/uploads \
+    && mkdir -p /app/static/uploads/fotos_produtos \
     && mkdir -p /app/static/uploads/fotos_eventos \
     && mkdir -p /app/static/uploads/fotos_usuarios \
     && mkdir -p /app/instance \
