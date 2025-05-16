@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     container_name: sistema-vendas
     restart: unless-stopped
+    user: "1000:1000"
     volumes:
       - ./instance:/app/instance:rw,z
       - ./static:/app/static:rw,z

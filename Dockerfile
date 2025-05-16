@@ -2,32 +2,30 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
+# Criar usuário não-root com UID 1000
+RUN groupadd -g 1000 appuser && \
+    useradd -u 1000 -g appuser -s /bin/bash -m appuser
+
+# Instalar dependências do sistema
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# Copiar requirements.txt primeiro para aproveitar o cache do Docker
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Criar usuário não-root com UID 1000
-RUN groupadd -g 1000 appuser && \
-    useradd -u 1000 -g appuser -s /bin/bash -m appuser
+# Copiar arquivos da aplicação
+COPY . .
 
 # Criar diretórios necessários e ajustar permissões
 RUN mkdir -p /app/static/uploads \
     && mkdir -p /app/instance \
     && mkdir -p /app/templates \
     && chown -R appuser:appuser /app \
+    && chmod -R 755 /app \
     && chmod -R 777 /app/static/uploads \
-    && chmod -R 777 /app/instance \
-    && chmod -R 777 /app/templates
-
-# Copiar arquivos da aplicação
-COPY --chown=appuser:appuser . .
-
-# Garantir que os diretórios tenham as permissões corretas após a cópia
-RUN chmod -R 777 /app/static/uploads \
     && chmod -R 777 /app/instance \
     && chmod -R 777 /app/templates
 
